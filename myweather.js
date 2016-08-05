@@ -1,10 +1,16 @@
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license.
+
+// This is my own personal project using the weather shield. I created a humidity alert!
+// If the humidity levels are more than 40% my LEDs will flash and alert me not to wear my hear down
+// Because hair and humidity do not match :)
+
+
 'use strict';
 // Define the objects you will be working with
 var five = require ("johnny-five");
 var Shield = require("j5-sparkfun-weather-shield")(five);
-//var device = require('azure-iot-device');
+
 
 // Add the following definition for the Particle plugin for Johnny-Five
 var Particle = require("particle-io");
@@ -16,8 +22,7 @@ var board = new five.Board({
   })
 });
 
-// The board.on() executes the anonymous function when the 
-// board reports back that it is initialized and ready.
+
 board.on("ready", function() {
     console.log("Board connected...");
 
@@ -27,10 +32,7 @@ board.on("ready", function() {
                 elevation: 500      // Go to http://www.WhatIsMyElevation.com to get your current elevation
             });
             
-            // The weather.on("data", callback) function invokes the anonymous callback function 
-            // whenever the data from the sensor changes (no faster than every 25ms). The anonymous 
-            // function is scoped to the object (e.g. this == the instance of Weather class object). 
-         // setTimeout( 
+            
            weather.on("data", function () {
                 console.log("Data...");
                 var led = new five.Led("D1");
