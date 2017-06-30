@@ -1,0 +1,17 @@
+{
+  "name": "photon_buzzer",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^4.0.0",
+    "johnny-five": "^0.11.3",
+    "particle-io": "^0.14.0"
+  }
+}
