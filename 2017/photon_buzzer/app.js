@@ -1,3 +1,8 @@
+// ********************************************
+// KSLHacks 06/30/2017
+// Chicago International Nodebots
+// ********************************************
+
 // bring in required libraries and packages
 require('dotenv').config()
 var five = require('johnny-five')
