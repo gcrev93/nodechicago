@@ -48,15 +48,17 @@ board.on('ready', function () {
     client.open(connectCallback);
 });
 
-function printResultFor(op) {
-    return function printResult(err, res) {
-        if (err) console.log(op + ' error: ' + err.toString());
-        if (res) console.log(op + ' status: ' + res.constructor.name);
-    };
-}
+
 
 
 function letsPlay() {
+    
+     ////////////////////////////////////////////////////////////////
+
+    // Johnny-Five code here!
+
+    ///////////////////////////////////////////////////////////////
+
   var rightWheel = new five.Motor({
     pins: { pwm: "D0", dir: "D4" },
     invertPWM: true
@@ -66,57 +68,9 @@ function letsPlay() {
     pins: { pwm: "D1", dir: "D5" },
     invertPWM: true
   });
-    var scalar = 256; // Friction coefficient
-    var actioncounter = 0;
-    var newcommand = "home()";
-    var speed = 255;
-    var buzzer ;
 
-    function actionSender() {
-        var distance = 0;
-        Math.round(actioncounter);
-        if (currentaction == "fd" || currentaction == "bk") {
-            var a = (moment.now() - actioncounter) * 0.18 * speed / scalar;
-            newcommand = "" + currentaction + "(" + a + ")";
-            distance = a;
-        }
-        else if (currentaction == "rt" || currentaction == "lt") {
-            var a = (moment.now() - actioncounter) * 0.18 * speed / scalar;
-            newcommand = "" + currentaction + "(" + a + ")";
-            distance = 0;
-        }
-        else if (currentaction == "home") {
-            newcommand = "home()";
-            distance = 0;
-        }
-        else {
-            newcommand = "fd(0)";
-            distance = 0;
-        };
-
-        
-        distance = distance.toString();
-        var data = JSON.stringify({ deviceId: deviceId', buzzer: buzzer , distance: distance });
-        var message = new Message(data);
-        console.log('Sending message: ' + message.getData());
-        client.sendEvent(message, printResultFor('send'));
-        actioncounter = moment.now();
-        buzzer = 0;
-    }
-
-    ////////////////////////////////////////////////////////////////
-
-    // Write your Johnny-Five code here!
-
-
-    ///////////////////////////////////////////////////////////////
-
-    // These functions are for stopping and moving the car with a little workaround specific to the Feather HUZZAH board and Johnny-Five. Leave these as they are.
     var button = new five.Button('D6');
 
-    // Inject the `button` hardware into
-    // the Repl instance's context;
-    // allows direct command line access
     board.repl.inject({
         button: button
     });
@@ -189,4 +143,51 @@ function letsPlay() {
         actionSender();
         keyMap[key.name]();
     });
+    
+    
+        var scalar = 256; // Friction coefficient
+    var actioncounter = 0;
+    var newcommand = "home()";
+    var speed = 255;
+    var buzzer ;
+    
+    
+    function actionSender() {
+        var distance = 0;
+        Math.round(actioncounter);
+        if (currentaction == "fd" || currentaction == "bk") {
+            var a = (moment.now() - actioncounter) * 0.18 * speed / scalar;
+            newcommand = "" + currentaction + "(" + a + ")";
+            distance = a;
+        }
+        else if (currentaction == "rt" || currentaction == "lt") {
+            var a = (moment.now() - actioncounter) * 0.18 * speed / scalar;
+            newcommand = "" + currentaction + "(" + a + ")";
+            distance = 0;
+        }
+        else if (currentaction == "home") {
+            newcommand = "home()";
+            distance = 0;
+        }
+        else {
+            newcommand = "fd(0)";
+            distance = 0;
+        };
+
+        
+        distance = distance.toString();
+        var data = JSON.stringify({ deviceId: deviceId', buzzer: buzzer , distance: distance });
+        var message = new Message(data);
+        console.log('Sending message: ' + message.getData());
+        client.sendEvent(message, printResultFor('send'));
+        actioncounter = moment.now();
+        buzzer = 0;
+    }
+}
+    
+function printResultFor(op) {
+    return function printResult(err, res) {
+        if (err) console.log(op + ' error: ' + err.toString());
+        if (res) console.log(op + ' status: ' + res.constructor.name);
+    };
 }
