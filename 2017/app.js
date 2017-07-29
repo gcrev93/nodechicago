@@ -3,19 +3,24 @@
 // Node modules - Don't modify
 var moment = require('moment');
 var five = require("johnny-five");
-var Protocol = require('azure-iot-device-amqp').Amqp;
+var Particle = require("particle-io")
+var Protocol = require('azure-iot-device-mqtt').Mqtt;
 var Client = require('azure-iot-device').Client;
 var Message = require('azure-iot-device').Message;
 
-// Setup - Don't modify
+// Include Photon Info Here
+var deviceId = '[DeviceId]';
+
 var board = new five.Board({
     io: new Particle({
         token: '[AccessToken]',
-        deviceName: '[DeviceName]'
+        deviceName: deviceId
     })
 })
 
-var connectionString = '[Device Connection String from Command Line]';
+
+//Fill in Here
+var connectionString = '[New Device Connection String from the competition IoT Hub]';
 var client = Client.fromConnectionString(connectionString, Protocol);
 var currentaction = "offline";
 
@@ -52,14 +57,20 @@ function printResultFor(op) {
 
 
 function letsPlay() {
-    var rightWheel = new five.Motor({ pins: [4, 12], invertPWM: true });
-    var leftWheel = new five.Motor({ pins: [5, 14], invertPWM: true });
+  var rightWheel = new five.Motor({
+    pins: { pwm: "D0", dir: "D4" },
+    invertPWM: true
+  });
+
+  var leftWheel = new five.Motor({
+    pins: { pwm: "D1", dir: "D5" },
+    invertPWM: true
+  });
     var scalar = 256; // Friction coefficient
     var actioncounter = 0;
     var newcommand = "home()";
     var speed = 255;
-    leftWheel.rev(0);
-    rightWheel.rev(0);
+    var buzzer ;
 
     function actionSender() {
         var distance = 0;
@@ -82,12 +93,15 @@ function letsPlay() {
             newcommand = "fd(0)";
             distance = 0;
         };
+
+        
         distance = distance.toString();
-        var data = JSON.stringify({ deviceId: deviceID, command: newcommand, distance: distance });
+        var data = JSON.stringify({ deviceId: deviceId', buzzer: buzzer , distance: distance });
         var message = new Message(data);
         console.log('Sending message: ' + message.getData());
         client.sendEvent(message, printResultFor('send'));
         actioncounter = moment.now();
+        buzzer = 0;
     }
 
     ////////////////////////////////////////////////////////////////
@@ -98,6 +112,30 @@ function letsPlay() {
     ///////////////////////////////////////////////////////////////
 
     // These functions are for stopping and moving the car with a little workaround specific to the Feather HUZZAH board and Johnny-Five. Leave these as they are.
+    var button = new five.Button('D6');
+
+    // Inject the `button` hardware into
+    // the Repl instance's context;
+    // allows direct command line access
+    board.repl.inject({
+        button: button
+    });
+
+    // "down" the button is pressed
+    button.on("down", function () {
+        console.log("down");
+        board.digitalWrite('D2', 1)
+        buzzer = 1;
+    });
+
+
+    // "up" the button is released
+    button.on("up", function () {
+        console.log("up");
+        board.digitalWrite('D2', 0)       
+    });
+    
+    
     function forward() {
         leftWheel.fwd(speed);
         rightWheel.fwd(speed);
